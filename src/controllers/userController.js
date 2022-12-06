@@ -142,27 +142,78 @@ export const getEdit = (req, res) => {
 };
 export const postEdit = async (req, res) => {
   const {
-    session : {
-      user: {_id},
+    session: {
+      user: { _id, avatarUrl },
     },
-    body : {name, email, username, location},
+    body: { name, email, username, location },
+    file,
   } = req;
   const findUserName = await User.findOne({ username });
   const findEmail = await User.findOne({ email });
-  if(findUserName._id != _id || findEmail._id != _id ){
+  if (findUserName._id != _id || findEmail._id != _id) {
     return res.render("edit-profile", {
       pageTitle: "Edit Profile",
       errorMessage: "User is exist",
     });
   }
 
-  const updateUser = await User.findByIdAndUpdate(_id, {
-    name, email, username, location,
-  },
-  {new : true}
+  const updateUser = await User.findByIdAndUpdate(
+    _id,
+    {
+      avatarUrl: file ? file.path : avatarUrl,
+      //삼항연산자로 체크해준다.
+      name,
+      email,
+      username,
+      location,
+    },
+    { new: true }
   );
   req.session.user = updateUser;
 
   return res.redirect("/users/edit");
 };
-export const see = (req, res) => res.send("See User");
+
+export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly === true) {
+    return res.redirect("/");
+  }
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+export const postChangePassword = async (req, res) => {
+  const {
+    sesson: {
+      user: { _id, password },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirm },
+  } = req;
+
+  const ok = await bcrypt.compare(oldPassword, password);
+  if (!ok) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "비밀번호가 맞지 않습니다.",
+    });
+  }
+  if (newPassword !== newPasswordConfirm) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "비밀번호를 확인해주세요",
+    });
+  }
+  const user = await User.findById(_id);
+  user.password = newPassword;
+  await user.save();
+  req.session.user.password = user.password;
+
+  return res.redirect("/users/logout");
+};
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).render("404", { pageTitle: "User Not found" });
+  }
+  return res.render("users/profile", { pageTitle: `${user.name}`, user });
+};
