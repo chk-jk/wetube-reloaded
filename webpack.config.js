@@ -5,7 +5,7 @@ module.exports = {
   entry: {
     main: "./src/client/js/main.js",
     videoPlayer: "./src/client/js/videoPlayer.js",
-    recorder: ".src/client/js/recorder.js",
+    recorder: "./src/client/js/recorder.js",
   },
   mode: "development",
   watch: true,
@@ -14,11 +14,15 @@ module.exports = {
       filename: "css/styles.css",
     }),
   ],
+  resolve:{
+    extensions: ["js", "jsx", "..."]
+  },
   output: {
     filename: "js/[name].js",
     path: path.resolve(__dirname, "assets"),
     clean: true,
   },
+  
   module: {
     rules: [
       {
