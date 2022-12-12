@@ -9,7 +9,7 @@ export const localsMiddleware = (req, res, next) => {
 
 export const protectorMiddleware = (req, res, next) => {
   if (req.session.loggedIn) {
-    next();
+    return next();
   } else {
     return res.redirect("/login");
   }
@@ -22,6 +22,7 @@ export const publicOnlyMiddleware = (req, res, next) => {
     return res.redirect("/");
   }
 };
+
 export const avatarUpload = multer({
   dest: "uploads/avatars/",
   limits: {
