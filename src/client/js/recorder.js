@@ -1,5 +1,4 @@
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-
 const actionBtn = document.getElementById("actionBtn");
 const video = document.getElementById("preview");
 
@@ -24,9 +23,10 @@ const downloadFile = (fileUrl, fileName) => {
 const handleDownload = async () => {
   actionBtn.removeEventListener("click", handleDownload);
 
-  actionBtn.innerText = "transcording...";
+  actionBtn.innerText = "Transcoding...";
 
   actionBtn.disabled = true;
+
   const ffmpeg = createFFmpeg({ log: true });
   await ffmpeg.load();
 
@@ -54,11 +54,12 @@ const handleDownload = async () => {
   const thumbUrl = URL.createObjectURL(thumbBlob);
 
   downloadFile(mp4Url, "MyRecording.mp4");
-  downloadFile(thumbUrl, "MyThumbNail.jpg");
+  downloadFile(thumbUrl, "MyThumbnail.jpg");
 
   ffmpeg.FS("unlink", files.input);
   ffmpeg.FS("unlink", files.output);
   ffmpeg.FS("unlink", files.thumb);
+
   URL.revokeObjectURL(mp4Url);
   URL.revokeObjectURL(thumbUrl);
   URL.revokeObjectURL(videoFile);
@@ -92,11 +93,15 @@ const handleStart = () => {
 const init = async () => {
   stream = await navigator.mediaDevices.getUserMedia({
     audio: false,
-    video: { width: 1024, height: 576 },
+    video: {
+      width: 1024,
+      height: 576,
+    },
   });
   video.srcObject = stream;
   video.play();
 };
 
 init();
+
 actionBtn.addEventListener("click", handleStart);

@@ -9,7 +9,7 @@ const handleSubmit = (event) => {
   if (text === "") {
     return;
   }
-  fetch(`/api/video/${videoId}/comment`, {
+  fetch(`/api/videos/${videoId}/comment`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -17,6 +17,7 @@ const handleSubmit = (event) => {
     body: JSON.stringify({ text }),
   });
 };
+
 if (form) {
   form.addEventListener("submit", handleSubmit);
 }

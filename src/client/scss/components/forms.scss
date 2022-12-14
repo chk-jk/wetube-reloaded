@@ -34,10 +34,11 @@ input[type="submit"],
   text-align: center !important;
   cursor: pointer;
   display: block;
+  border: none;
   &:focus {
     outline: none;
   }
-  &:disabled{
+  &:disabled {
     opacity: 0.5;
     pointer-events: none;
   }
